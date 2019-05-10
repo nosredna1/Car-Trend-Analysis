@@ -164,15 +164,13 @@ def checkDup(car_info, workbook = None):
         # Compare workbook titles with input newly scraped car infos
         x = 0
         y = 0
+
+        current_car_listings = len(car_info)
         while x < nRows - 1: # First loop iterates workbook infos
-            # Have to update list length as you remove
-            current_car_listings = len(car_info)
-            
+            current_listing = workbook_car_info[x]
             while y < current_car_listings: # Second loop iterates over scraped car infos
-
-                if workbook_car_info[x] == car_info[y][0]:
+                if current_listing == car_info[y][0]:
                     del car_info[y]
-
                     current_car_listings = len(car_info)
                 else:
                     y += 1
