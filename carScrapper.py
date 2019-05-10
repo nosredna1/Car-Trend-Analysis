@@ -134,7 +134,7 @@ def addListings(working_worksheet, car_info):
     # Determines how many rows are written in the excel sheet and
     # adds the amount of new listings to the list
     nRows = working_worksheet.max_row
-    nAdd = len(car_info[0])
+    nAdd = len(car_info)
 
     i = 0
     for r in range(nRows, nRows + nAdd):
@@ -169,7 +169,8 @@ def checkDup(car_info, workbook = None):
             current_car_listings = len(car_info)
             
             while y < current_car_listings: # Second loop iterates over scraped car infos
-                if workbook_car_info[x] is car_info[y][0]:
+
+                if workbook_car_info[x] == car_info[y][0]:
                     del car_info[y]
 
                     current_car_listings = len(car_info)
@@ -186,10 +187,11 @@ def checkDup(car_info, workbook = None):
     new_car_listings = len(car_info)
     while z < new_car_listings:
         selected_listing = car_info[z][0]
-
         while k < new_car_listings:
-            if k != z and selected_listing is car_info[k][0]:
+
+            if k != z and selected_listing == car_info[k][0]:
                 del car_info[k]
+                new_car_listings = len(car_info)
             else:
                 k += 1
         z += 1
