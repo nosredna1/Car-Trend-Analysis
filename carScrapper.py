@@ -85,23 +85,32 @@ def filtered_search(raw_input, car_info):
     # Splits keywords into individual words
     car_model = raw_input.split()
     current_len = len(car_info)
+    
+    # Removes listings that does not contain searched keywords
     i = 0
     for k in car_model:
         while i < current_len:
             if k.upper() in car_info[i][0].upper():
                 i += 1
             else:
-                # Removes listings that does not contain searched keywords
                 del car_info[i]
 
                 current_len = len(car_info)
         i = 0 # Reset counter
 
+    # Remove listings that is listed for less than $100
+    j = 0
+    while j in range(len(car_info)):
+        if car_info[j][1] <= 100:
+            del car_info[j]
+        else:
+            j += 1
+
     return(car_info)
 
-def createNewWorksheet(car_info):
+def createNewWorksheet(car_info, file_name):
     # Creating a workbook and worksheet if no previous existed
-    workbook = xlsxwriter.Workbook('ScrappedListings.xlsx')
+    workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet('Listings')
 
     # Adding bold, money formats
@@ -158,7 +167,7 @@ def checkDup(car_info, workbook = None):
         workbook_car_info = []
         nRows = workbook.max_row
         # Get titles of listing from workbook input
-        for r in range(nRows - 1):
+        for r in range(nRows):
             workbook_car_info.append(workbook.cell(row = r + 2, column = 4).value)
 
         # Compare workbook titles with input newly scraped car infos
@@ -198,21 +207,22 @@ def checkDup(car_info, workbook = None):
     return car_info
 
 if __name__ == "__main__":
-    # Takes user input of 
+    # Takes user input of vehicle
     raw_input = input('What vehicle? ')
+    file_name = raw_input.replace(' ', '_') + '.xlsx'
 
     # Rips listings and puts them into a list consisting of [title, pricing, date, id, link]
     car_info = get_listings(raw_input)
     upCar_info = filtered_search(raw_input, car_info)
 
     # Checks if a file exists with old ripped listings
-    exists = os.path.isfile('ScrappedListings.xlsx')
+    exists = os.path.isfile(file_name)
 
     if exists:
-        loaded_workbook = load_workbook(filename = 'ScrappedListings.xlsx')
+        loaded_workbook = load_workbook(filename = file_name)
         loaded_worksheet = loaded_workbook.active
         filtered_car_info = checkDup(upCar_info, loaded_worksheet)
         addListings(loaded_worksheet, filtered_car_info)
     else:
         filtered_car_info = checkDup(upCar_info)
-        createNewWorksheet(filtered_car_info)
+        createNewWorksheet(filtered_car_info, file_name)
